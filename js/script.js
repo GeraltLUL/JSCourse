@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     hideTabContent();
     showTabContent();
 
-    tabsParent.addEventListener('click', (event) => {
-        const target = event.target;
+    tabsParent.addEventListener('click', (e) => {
+        const target = e.target;
 
         if (target && target.classList.contains('tabheader__item')) {
             tabs.forEach((item, i) => {
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getZero(num) {
-        if (num>= 0 && num < 10) {
+        if (num >= 0 && num < 10) {
             return `0${num}`;
         }
         else {
@@ -86,11 +86,62 @@ document.addEventListener('DOMContentLoaded', () => {
             minutes.innerHTML = getZero(t.minutes);
             seconds.innerHTML = getZero(t.seconds);
 
-            if (t.total <= 0){
+            if (t.total <= 0) {
                 clearInterval(timeInterval);
             }
         }
     }
 
     setClock('.timer', deadline);
+
+    // Modal
+
+    const modalTrigger = document.querySelectorAll('[data-modal]'),
+        modal = document.querySelector('.modal'),
+        modalClose = document.querySelector('[data-close]');
+
+    function closeModal() {
+        modal.classList.add('hide');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    function openModal() {
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        document.body.style.overflow = 'hidden';
+        clearInterval(modalTimerId);
+    }
+
+    modalTrigger.forEach(btn => {
+        btn.addEventListener('click', openModal);
+    });
+
+    modalClose.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
+
+    // Открытие модального окна по таймеру
+    const modalTimerId = setTimeout(openModal, 3000);
+
+    // Открытие модального окна по пролитсыванию страницы в самый низ
+    function showModalByScroll() {
+        if (window.pageYOffset + document.documentElement.clientHeight >=
+            document.documentElement.scrollHeight) {
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll);
+        }
+    }
+
+    window.addEventListener('scroll', showModalByScroll);
 });
