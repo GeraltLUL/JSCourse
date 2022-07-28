@@ -99,12 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTrigger = document.querySelectorAll('[data-modal]'),
         modal = document.querySelector('.modal');
 
+    // Функция закрытия модального окна 
     function closeModal() {
         modal.classList.add('hide');
         modal.classList.remove('show');
         document.body.style.overflow = '';
     }
 
+    // Функция открытия модального окна 
     function openModal() {
         modal.classList.add('show');
         modal.classList.remove('hide');
@@ -116,12 +118,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', openModal);
     });
 
+    // Закрытие модального окна по клику за его область
     modal.addEventListener('click', (e) => {
         if (e.target === modal || e.target.getAttribute('data-close') == '') {
             closeModal();
         }
     });
 
+    // Закрытие модального окна по клику на ESC
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Escape' && modal.classList.contains('show')) {
             closeModal();
@@ -190,14 +194,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return await res.json();
-   }; 
+    };
 
-   getResource('http://localhost:3000/menu')
-   .then(data => {
-        data.forEach(({img, altimg, title, descr, price}) => {
-            new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+    getResource('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({ img, altimg, title, descr, price }) => {
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+            });
         });
-   });
+
+    // axios.get('http://localhost:3000/menu')
+    //     .then(data => {
+    //         data.data.forEach(({ img, altimg, title, descr, price }) => {
+    //             new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+    //         });
+    //     });
 
     //Forms 
 
@@ -213,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bindPostData(item);
     });
 
-   const postData = async (url, data) => {
+    const postData = async (url, data) => {
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-type': 'application/json' },
@@ -221,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         return await res.json();
-   }; 
+    };
 
     function bindPostData(form) {
         form.addEventListener('submit', (e) => {
@@ -241,17 +252,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
             postData('http://localhost:3000/requests', json)
-            .then(data => {
-                console.log(data);
-                showThanksModal(message.success);
-                statusMessage.remove();
-            })
-            .catch(() => {
-                showThanksModal(message.failure);
-            })
-            .finally(() => {
-                form.reset();
-            });
+                .then(data => {
+                    console.log(data);
+                    showThanksModal(message.success);
+                    statusMessage.remove();
+                })
+                .catch(() => {
+                    showThanksModal(message.failure);
+                })
+                .finally(() => {
+                    form.reset();
+                });
         });
     }
 
@@ -281,6 +292,78 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     fetch('http://localhost:3000/menu')
-    .then(data => data.json())
-    .then(res => console.log(res));
+        .then(data => data.json())
+        .then(res => console.log(res));
+
+    // Slider 1
+
+    const slides = document.querySelectorAll('.offer__slide'),
+        prev = document.querySelector('.offer__slider-prev'),
+        next = document.querySelector('.offer__slider-next'),
+        total = document.querySelector('#total'),
+        current = document.querySelector('#current');
+
+    let slidesIndex = 1;
+
+    function showSlides(n) {
+        if (n > slides.length) {
+            slidesIndex = 1;
+        } else if (n < 1) {
+            slidesIndex = slides.length;
+        }
+
+        slides.forEach(item => item.style.display = 'none');
+
+        slides[slidesIndex - 1].style.display = 'block';
+
+        if (slides.length < 10) {
+            current.textContent = `0${slidesIndex}`;
+        } else {
+            current.textContent = slidesIndex;
+        }
+    }
+
+    showSlides(slidesIndex);
+
+    if (slides.length < 10) {
+        total.textContent = `0${slides.length}`;
+    } else {
+        total.textContent = slides.length;
+    }
+
+
+
+    function plusSlides(n) {
+        showSlides(slidesIndex += n);
+    }
+
+    prev.addEventListener('click', () => {
+        plusSlides(-1);
+    });
+
+    next.addEventListener('click', () => {
+        plusSlides(1);
+    });
+
+
+
 });
+
+//Local Storage
+
+// localStorage.setItem('number', 5);
+// console.log(localStorage.getItem('number'));
+// localStorage.removeItem('number');
+// localStorage.clear();
+
+// if (localStorage.getItem('id')) {
+    //Do something
+// }
+
+// const person = {
+//     name: "Alex",
+//     age: 25
+// };
+
+// const serializedPerson = JSON.stringify(person);
+// localStorage.setItem('alex', serializedPerson);
