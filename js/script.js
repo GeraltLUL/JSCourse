@@ -295,58 +295,126 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => data.json())
         .then(res => console.log(res));
 
-    // Slider 1
+    // Sliders
 
     const slides = document.querySelectorAll('.offer__slide'),
         prev = document.querySelector('.offer__slider-prev'),
         next = document.querySelector('.offer__slider-next'),
         total = document.querySelector('#total'),
-        current = document.querySelector('#current');
-
+        current = document.querySelector('#current'),
+        slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+        slidesField = document.querySelector('.offer__slider-inner'),
+        width = window.getComputedStyle(slidesWrapper).width;
     let slidesIndex = 1;
 
-    function showSlides(n) {
-        if (n > slides.length) {
-            slidesIndex = 1;
-        } else if (n < 1) {
-            slidesIndex = slides.length;
+    // Slider-1-easy
+
+    // function showSlides(n) {
+    //     if (n > slides.length) {
+    //         slidesIndex = 1;
+    //     } else if (n < 1) {
+    //         slidesIndex = slides.length;
+    //     }
+
+    //     slides.forEach(item => item.style.display = 'none');
+
+    //     slides[slidesIndex - 1].style.display = 'block';
+
+    //     if (slides.length < 10) {
+    //         current.textContent = `0${slidesIndex}`;
+    //     } else {
+    //         current.textContent = slidesIndex;
+    //     }
+    // }
+
+    // showSlides(slidesIndex);
+
+    // if (slides.length < 10) {
+    //     total.textContent = `0${slides.length}`;
+    // } else {
+    //     total.textContent = slides.length;
+    // }
+
+
+
+    // function plusSlides(n) {
+    //     showSlides(slidesIndex += n);
+    // }
+
+    // prev.addEventListener('click', () => {
+    //     plusSlides(-1);
+    // });
+
+    // next.addEventListener('click', () => {
+    //     plusSlides(1);
+    // });
+
+
+    // Slider-2-hard-courusel
+
+    let offset = 0;
+
+    if (slides.length < 10) {
+        total.textContent = `0${slides.length}`;
+        current.textContent = `0${slidesIndex}`;
+    } else {
+        total.textContent = slidesIndex;
+        current.textContent = slidesIndex;
+    }
+
+    slidesField.style.width = 100 * slides.length + '%';
+    slidesField.style.display = 'flex';
+    slidesField.style.transition = '0.5s all';
+
+    slidesWrapper.style.overflow = 'hidden';
+
+    slides.forEach(slide => {
+        slide.style.width = width;
+    });
+
+    prev.addEventListener('click', () => {
+        if (offset == 0) {
+            offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+        } else {
+            offset -= +width.slice(0, width.length - 2);
         }
 
-        slides.forEach(item => item.style.display = 'none');
+        slidesField.style.transform = `translateX(-${offset}px)`;
 
-        slides[slidesIndex - 1].style.display = 'block';
+        if (slidesIndex == 1) {
+            slidesIndex = slides.length;
+        } else {
+            slidesIndex--;
+        }
 
         if (slides.length < 10) {
             current.textContent = `0${slidesIndex}`;
         } else {
             current.textContent = slidesIndex;
         }
-    }
-
-    showSlides(slidesIndex);
-
-    if (slides.length < 10) {
-        total.textContent = `0${slides.length}`;
-    } else {
-        total.textContent = slides.length;
-    }
-
-
-
-    function plusSlides(n) {
-        showSlides(slidesIndex += n);
-    }
-
-    prev.addEventListener('click', () => {
-        plusSlides(-1);
     });
 
     next.addEventListener('click', () => {
-        plusSlides(1);
+        if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+            offset = 0;
+        } else {
+            offset += +width.slice(0, width.length - 2);
+        }
+
+        slidesField.style.transform = `translateX(-${offset}px)`;
+
+        if (slidesIndex == slides.length) {
+            slidesIndex = 1;
+        } else {
+            slidesIndex++;
+        }
+
+        if (slides.length < 10) {
+            current.textContent = `0${slidesIndex}`;
+        } else {
+            current.textContent = slidesIndex;
+        }
     });
-
-
-
 });
 
 //Local Storage
